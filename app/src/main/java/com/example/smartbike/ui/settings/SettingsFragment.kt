@@ -54,9 +54,13 @@ class SettingsFragment : Fragment() {
     private fun genData(inp: Int)
     {
         val f = File(context?.filesDir, "data.csv")
+        if(f.exists())
+        {
+            f.delete()
+        }
         var outStream = OutputStreamWriter(context?.openFileOutput("data.csv", Context.MODE_PRIVATE))
 
-        outStream.write("id, Date, Duration, Distance, Average Speed, Average Pedal Rate")
+        outStream.write("id, Date, Duration, Distance, Average Speed, Average Pedal Rate\n")
         var cal = GregorianCalendar()
         var year = 2000
         var month = 1
@@ -103,7 +107,7 @@ class SettingsFragment : Fragment() {
 
             //Write to file
             val date = "$year:$month:$day$time"
-            val outString = "$x, $date, $duration, $distance, $speed, $pedRate"
+            val outString = "$x, $date, $duration, $distance, $speed, $pedRate\n"
             outStream.write(outString)
 
             //Debug Purposes
@@ -112,6 +116,7 @@ class SettingsFragment : Fragment() {
                 Log.i("genData", "50% Complete");
             }
         }
+        outStream.close();
         Log.i("genData", "Fully Complete");
     }
 
