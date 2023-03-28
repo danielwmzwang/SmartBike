@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SmartBike</string>
+    <string name="title_workout">Workout</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_debug">Debug</string>
+</resources>
