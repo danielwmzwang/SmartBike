@@ -1,112 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textViewDBDuration"
-        android:layout_width="wrap_content"
+    <TableLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="72dp"
-        android:text="00H00M00S"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp">
 
-    <TextView
-        android:id="@+id/textViewDBSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="72dp"
-        android:text="0 MPH"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDBDistance" />
+        <TableRow
+            android:layout_gravity="center_horizontal"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/textView3"
+                android:text="Historical Summary"
+                android:textSize="24sp"
+                android:textStyle="bold"/>
+        </TableRow>
 
-    <TextView
-        android:id="@+id/textViewDBDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="72dp"
-        android:text="0 Miles"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDBDuration" />
+        <TableRow
+            android:paddingHorizontal="0dp">
+            <TextView
+                android:id="@+id/dbDurationTitle"
+                android:layout_marginTop="20dp"
+                android:text="Average Duration:"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/textViewDBDuration"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="right"
+                android:text="00H 00M 00S"
+                android:textSize="16sp"/>
+        </TableRow>
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="40dp"
-        android:text="Average Duration:"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        <TableRow
+            android:paddingHorizontal="0dp">
+            <TextView
+                android:id="@+id/dbSpeedTitle"
+                android:layout_marginTop="20dp"
+                android:text="Average Distance:"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/textViewDBSpeed"
+                android:layout_marginTop="20dp"
+                android:text="0 Miles"
+                android:textSize="16sp"
+                android:layout_gravity="right" />
+        </TableRow>
 
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="20dp"
-        android:text="Average Distance:"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        <TableRow
+            android:paddingHorizontal="0dp"
+            android:paddingBottom="10dp">
+            <TextView
+                android:id="@+id/dbDistanceTitle"
+                android:layout_marginTop="20dp"
+                android:text="Average Speed:"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/textViewDBDistance"
+                android:layout_marginTop="20dp"
+                android:text="0 MPH"
+                android:textSize="16sp"
+                android:layout_gravity="right"/>
+        </TableRow>
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="20dp"
-        android:text="Average Speed:"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/idGraphView"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:layout_marginBottom="173dp"
-        android:text="Overview"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/idGraphView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <!-- Other views here -->
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.jjoe64.graphview.GraphView
-        android:id="@+id/idGraphView"
-        android:layout_width="316dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="149dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/idGraphView2"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idGraphView" />
+    </TableLayout>
+</ScrollView>

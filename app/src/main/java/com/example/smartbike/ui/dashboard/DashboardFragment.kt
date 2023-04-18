@@ -13,11 +13,7 @@ import com.example.smartbike.databinding.FragmentDashboardBinding
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import java.io.BufferedReader
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
+import java.io.*
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -64,7 +60,7 @@ class DashboardFragment : Fragment() {
         txtDBDistance.text = (if(pack.tDistance== Double.NaN) 0 else dashDistance).toString() + " Miles"
         txtDBSpeed.text = (if(pack.tSpeed== Double.NaN) 0 else dashSpeed).toString() + " MPH"
 
-        //////GRAPH//////
+        //////GRAPH1//////
         val lineGraphView: GraphView = binding.idGraphView
         var distArr = Array<DataPoint>(pack.distance.size){DataPoint(0.0,0.0)}
         //var listy = List<DataPoint>(pack.distance.size, DataPoint(0.0,0.0))
@@ -93,8 +89,44 @@ class DashboardFragment : Fragment() {
         lineGraphView.viewport.setMinX(1.0)
         lineGraphView.viewport.setMinY(0.0)
         lineGraphView.title = "Distance Graph"
+        lineGraphView.gridLabelRenderer.horizontalAxisTitle = "Ride Number"
+        lineGraphView.gridLabelRenderer.verticalAxisTitle = "Distance Travelled (Miles)"
         series.color = R.color.purple_200
         lineGraphView.addSeries(series)
+
+        //////GRAPH2//////
+        val lineGraphView2: GraphView = binding.idGraphView2
+        var distArr2 = Array<DataPoint>(pack.speed.size){DataPoint(0.0,0.0)}
+        //var listy = List<DataPoint>(pack.distance.size, DataPoint(0.0,0.0))
+
+        var maxValY2 = 0.0
+        var maxValX2 = pack.speed.size.toDouble()
+        for(x in 1..pack.speed.size)
+        {
+            Log.i("Graph",pack.speed[x-1].toString())
+            if(pack.speed[x-1]>maxValY2)
+            {
+                maxValY2=pack.speed[x-1]
+            }
+            distArr2[x-1] = (DataPoint(x.toDouble(), pack.speed[x-1]))
+        }
+        val series2: LineGraphSeries<DataPoint> = LineGraphSeries(distArr2)
+
+        lineGraphView2.animate()
+        lineGraphView2.animate()
+        lineGraphView2.viewport.isScrollable = true
+        lineGraphView2.viewport.isScalable = true
+        lineGraphView2.viewport.setScalableY(true)
+        lineGraphView2.viewport.setScrollableY(true)
+        lineGraphView2.viewport.setMaxX(maxValX2)
+        lineGraphView2.viewport.setMaxY(maxValY2)
+        lineGraphView2.viewport.setMinX(1.0)
+        lineGraphView2.viewport.setMinY(0.0)
+        lineGraphView2.title = "Speed Graph"
+        lineGraphView2.gridLabelRenderer.horizontalAxisTitle = "Ride Number"
+        lineGraphView2.gridLabelRenderer.verticalAxisTitle = "Average Speed (MPH)"
+        series2.color = R.color.purple_200
+        lineGraphView2.addSeries(series2)
 
         /*
         dashboardViewModel.text.observe(viewLifecycleOwner) {
@@ -106,6 +138,15 @@ class DashboardFragment : Fragment() {
 
     private fun readData(): datapack
     {
+        /*
+        val f = File(context?.filesDir, "data.csv")
+        if(f.exists())
+        {
+            f.delete()
+        }
+        */
+
+
         Log.i("ReadData", "Entered")
         var dat = Vector<String>()
         var dur = Vector<Int>()
@@ -120,6 +161,7 @@ class DashboardFragment : Fragment() {
         try{
             Log.i("ReadData", "Try")
             var inp = context?.openFileInput("data.csv")
+
             if(inp!=null)
             {
                 Log.i("ReadData", "Reading1")
@@ -169,7 +211,16 @@ class DashboardFragment : Fragment() {
         }
         catch(e: FileNotFoundException)
         {
-            Log.e("Dashboard", "File not found$e")
+            //Log.e("Dashboard", "File not found$e")
+            dat.add("")
+            dur.add(0)
+            dis.add(0.0)
+            speed.add(0.0)
+            ped.add(0.0)
+            totalDuration = 0.0
+            totalDistance = 0.0
+            totalSpeed = 0.0
+            return datapack(dat, dur, dis, speed, ped, totalDuration, totalDistance, totalSpeed)
         }
         catch(e: IOException)
         {

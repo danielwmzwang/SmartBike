@@ -43,6 +43,14 @@ class SettingsFragment : Fragment() {
                 genData(numEntries);
             }
         }
+
+        binding.destruct.setOnClickListener{
+            val f = File(context?.filesDir, "data.csv")
+            if(f.exists())
+            {
+                f.delete()
+            }
+        }
 /*
         val textView: TextView = binding.textSettings
         settingsViewModel.text.observe(viewLifecycleOwner) {
@@ -90,7 +98,7 @@ class SettingsFragment : Fragment() {
                 year++
             }
             //Duration Data
-            var dh = (0..(23-temp)).random()
+            var dh = (0..4).random()
             var ds = (0..59).random()
             var dm = (0..59).random()
             var tempDuration = dh + dm.toDouble()/60 + ds.toDouble()/3600
