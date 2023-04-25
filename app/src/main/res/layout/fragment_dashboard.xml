@@ -18,7 +18,68 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center">
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/textview1"
+                android:text="Last Ride"
+                android:layout_gravity="center_horizontal"
+                android:textSize="24sp"
+                android:textStyle="bold"/>
+        </TableRow>
+
+        <TableRow
+            android:paddingHorizontal="0dp">
+            <TextView
+                android:id="@+id/lrDurTitle"
+                android:layout_marginTop="0dp"
+                android:text="Average Duration:"
+                android:textSize="16sp"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:id="@+id/lrDurText"
+                android:layout_gravity="right"
+                android:layout_marginTop="20dp"
+                android:paddingRight="5dp"
+                android:text="0H 0M 0S"
+                android:textSize="16sp"
+                android:layout_weight="1"/>
+        </TableRow>
+
+        <TableRow
+            android:paddingHorizontal="0dp">
+            <TextView
+                android:id="@+id/lrSpeedTitle"
+                android:layout_marginTop="0dp"
+                android:text="Average Distance:"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/lrSpeedText"
+                android:layout_marginTop="20dp"
+                android:text="0 Miles"
+                android:textSize="16sp"
+                android:layout_gravity="right" />
+        </TableRow>
+
+        <TableRow
+            android:paddingHorizontal="0dp"
+            android:paddingBottom="10dp">
+            <TextView
+                android:id="@+id/lrDistanceTitle"
+                android:layout_marginTop="0dp"
+                android:text="Average Speed:"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/lrDistanceText"
+                android:layout_marginTop="20dp"
+                android:text="0 MPH"
+                android:textSize="16sp"
+                android:layout_gravity="right"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_gravity="center_horizontal"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/textview2"
                 android:text="Historical Summary"
                 android:textSize="24sp"
                 android:textStyle="bold"/>
@@ -28,26 +89,30 @@
             android:paddingHorizontal="0dp">
             <TextView
                 android:id="@+id/dbDurationTitle"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="0dp"
                 android:text="Average Duration:"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:layout_weight="1"/>
+
             <TextView
                 android:id="@+id/textViewDBDuration"
-                android:layout_marginTop="20dp"
                 android:layout_gravity="right"
+                android:layout_marginTop="20dp"
                 android:text="00H 00M 00S"
-                android:textSize="16sp"/>
+                android:paddingRight="5dp"
+                android:textSize="16sp"
+                android:layout_weight="1"/>
         </TableRow>
 
         <TableRow
             android:paddingHorizontal="0dp">
             <TextView
                 android:id="@+id/dbSpeedTitle"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="0dp"
                 android:text="Average Distance:"
                 android:textSize="16sp" />
             <TextView
-                android:id="@+id/textViewDBSpeed"
+                android:id="@+id/textViewDBDistance"
                 android:layout_marginTop="20dp"
                 android:text="0 Miles"
                 android:textSize="16sp"
@@ -59,32 +124,212 @@
             android:paddingBottom="10dp">
             <TextView
                 android:id="@+id/dbDistanceTitle"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="0dp"
                 android:text="Average Speed:"
                 android:textSize="16sp" />
             <TextView
-                android:id="@+id/textViewDBDistance"
+                android:id="@+id/textViewDBSpeed"
                 android:layout_marginTop="20dp"
                 android:text="0 MPH"
                 android:textSize="16sp"
                 android:layout_gravity="right"/>
         </TableRow>
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/switchText"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_weight="5"
+                android:textSize="16sp"
+                android:text="Select what to view:" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/switch0"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+
+                android:text="Last Ride" />
+            <Button
+                android:id="@+id/switch1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/purple_200"
+                android:text="History" />
+        </TableRow>
+
+        <TableRow
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv1"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_weight="5"
+                android:textSize="16sp"
+                android:text="Select a Date Range:"
+                android:visibility="gone"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/tf1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/purple_200"
+                android:text="1D"
+                android:visibility="gone"/>
+            <Button
+                android:id="@+id/tf2"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/purple_200"
+                android:text="1W"
+                android:visibility="gone"/>
+            <Button
+                android:id="@+id/tf3"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/purple_200"
+                android:text="1M"
+                android:visibility="gone"/>
+            <Button
+                android:id="@+id/tf4"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="ALL"
+                android:visibility="gone"/>
+        </TableRow>
+
+
         <com.jjoe64.graphview.GraphView
-            android:id="@+id/idGraphView"
+            android:id="@+id/lastRideRPM"
             android:layout_width="316dp"
             android:layout_height="361dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            android:visibility="visible"/>
         <com.jjoe64.graphview.GraphView
-            android:id="@+id/idGraphView2"
+            android:id="@+id/lastRideSpeed"
             android:layout_width="316dp"
             android:layout_height="361dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/idGraphView" />
+            app:layout_constraintTop_toBottomOf="@+id/lastRideRPM"
+            android:visibility="visible"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/lastRideDist"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lastRideRPM"
+            android:visibility="visible"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/lastRideCad"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lastRideRPM"
+            android:visibility="visible"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/lastRidePWR"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lastRideRPM"
+            android:visibility="visible"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/lastRidePitch"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lastRideRPM"
+            android:visibility="visible"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/lastRideCals"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lastRideRPM"
+            android:visibility="visible"
+            android:layout_marginBottom="40dp"/>
+
+        <!--Historical-->
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/histDuration"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/histRPM"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/histSpeed"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/histDistance"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/histCadence"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/histPWR"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/histPitch"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"/>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/histCals"
+            android:layout_width="316dp"
+            android:layout_height="361dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="40dp"
+            android:visibility="gone"/>
     </TableLayout>
 </ScrollView>
