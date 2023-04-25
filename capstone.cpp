@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <ctime>
+#include <cstdlib>
 using namespace std;
 
 
@@ -26,6 +28,7 @@ float d2 = 0.01;
 bool S2 = true;
 
 int main() {
+  srand(time(0));
   ofstream et_file;
   ofstream et2_file;
   ofstream rpm_file;
@@ -82,16 +85,16 @@ int main() {
       float pitch = 0.00 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(10.00-0.00)));
       
       speedC = 1.00/2.00 / et2;
-      crps = speedC * (2.00 * 3.14159265 / 60); //rpm*0.1047198
-      pedAcc = ((crps - tempCad) / (et2 * 60)) * crankArm; //25.6362(2.6846) - 41.821(4.3795) / 0.0195036(1.170216s) = 1.44831rad/s^2
+      crps = speedC * (2.00 * 3.14159265 / 60); 
+      pedAcc = ((crps - tempCad) / (et2 * 60)) * crankArm; 
       tempCad = crps;
-      //inertia = (1.00/3.00) * 0.227 * crankArm * crankArm; // this is wrong
+      //inertia = (1.00/3.00) * 0.227 * crankArm * crankArm; 
       inertia = 20.00; //average inertial load on crank
-      torque = abs(inertia * pedAcc); //0.00218677*1.44831= 0.00316712, kg*m^2 * rad/s^2 = Nm
-      forceG =  sin(pitch * 3.14159265 / 180) * 84.3 * 9.81; //826.983 N
-      disInc = abs(d1 - d2) * 1609.34; //d1 = 0.0627228, d2 = 0.0647681 , 3.29159128 m
-      workG = forceG * disInc; //827*0.949=784
-      power = (torque * crps) + workG; //(0.00316712 * 2.6846) = 0.0085 + 
+      torque = abs(inertia * pedAcc); 
+      forceG =  sin(pitch * 3.14159265 / 180) * 84.3 * 9.81; 
+      disInc = abs(d1 - d2) * 1609.34; 
+      workG = forceG * disInc; 
+      power = (torque * crps) + workG; 
       
 
       cout << "time2 = " << et2 << "\n";
