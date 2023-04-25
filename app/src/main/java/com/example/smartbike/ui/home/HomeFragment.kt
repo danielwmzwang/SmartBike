@@ -189,9 +189,15 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         if(f.exists())
         {
             f.forEachLine{numLines++}
+            Log.i("File Exists", "$numLines")
+            if(numLines==0)
+            {
+                outStream.write("id, Date, Duration, Distance, Average Speed, Average Pedal Rate\n")
+            }
         }
         else
         {
+            Log.i("File doesn't exist", "Writing stuff")
             outStream.write("id, Date, Duration, Distance, Average Speed, Average Pedal Rate\n")
         }
         //Generate New Data
@@ -331,6 +337,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             outString +=", ${intDist[x]}&${intSpeed[x]}&${intRPM[x]}&${intCad[x]}&${intPWR[x]}&${intPitch[x]}&${intCal[x]}"
         }
         outString+="\n"
+
+        Log.i("outString", "$outString")
 
         /*
         var intDist = Vector<Double>()

@@ -210,6 +210,8 @@ class DashboardFragment : Fragment() {
         val tempM = (tempdashDuration-tempH*3600)/60
         val tempS = (tempdashDuration-tempH*3600-tempM*60)
         val dashDuration = "" + (tempdashDuration/3600) + "H " + tempM + "M " + tempS + "S"
+        Log.i("pack tDistance", "${pack.tDistance}")
+        Log.i("pack distance size", "${pack.distance.size}")
         val dashDistance = BigDecimal(pack.tDistance/pack.distance.size).setScale(1, RoundingMode.HALF_EVEN).toDouble()
         val dashSpeed = BigDecimal(pack.tSpeed/pack.speed.size).setScale(1, RoundingMode.HALF_EVEN).toDouble()
         txtDBDuration.text = (if(pack.tDuration== Double.NaN) 0 else dashDuration).toString()
@@ -1011,7 +1013,7 @@ class DashboardFragment : Fragment() {
                         lineGraphView.viewport.setMinX(0.0)
                         lineGraphView.viewport.setMinY(0.0)
                         lineGraphView.title = "RPM Graph"
-                        lineGraphView.gridLabelRenderer.horizontalAxisTitle = "Ride Number"
+                        lineGraphView.gridLabelRenderer.horizontalAxisTitle = "Interval (15 Minutes)"
                         lineGraphView.gridLabelRenderer.verticalAxisTitle = "Revolutions per Minute"
                         series.color = R.color.purple_200
                         lineGraphView.addSeries(series)
@@ -1045,7 +1047,7 @@ class DashboardFragment : Fragment() {
                         lineGraphView2.viewport.setMinX(0.0)
                         lineGraphView2.viewport.setMinY(0.0)
                         lineGraphView2.title = "Speed Graph"
-                        lineGraphView2.gridLabelRenderer.horizontalAxisTitle = "Ride Number"
+                        lineGraphView2.gridLabelRenderer.horizontalAxisTitle = "Interval (15 Minutes)"
                         lineGraphView2.gridLabelRenderer.verticalAxisTitle = "Speed (MPH)"
                         series2.color = R.color.purple_200
                         lineGraphView2.addSeries(series2)
@@ -1182,7 +1184,7 @@ class DashboardFragment : Fragment() {
                         lineGraphView6.viewport.setMinY(0.0)
                         lineGraphView6.title = "Pitch Graph"
                         lineGraphView6.gridLabelRenderer.horizontalAxisTitle = "Interval (15 Minutes)"
-                        lineGraphView6.gridLabelRenderer.verticalAxisTitle = "Pitch per Interval (MPH)"
+                        lineGraphView6.gridLabelRenderer.verticalAxisTitle = "Pitch per Interval (Degrees)"
                         series6.color = R.color.purple_200
                         lineGraphView6.addSeries(series6)
 
