@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.bluetooth.BluetoothFragment">
+
+    <!-- Bluetooth Connection Status -->
+    <TextView
+        android:id="@+id/textViewBluetoothStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bluetooth Status: Connected"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/textViewBluetoothConnector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connected To: 64:69:4E:8C:95:97"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/textViewBluetoothPermission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Permission: Granted"
+        android:textSize="18sp"/>
+
+    <!-- Real-Time Data Display -->
+    <TextView
+        android:id="@+id/textViewRealTimeData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Real-Time Data:\n
+        data: MPU6050 Found!\n
+        data: R16.54\n
+        data: S1.35\n
+        data: D0.0007\n
+        data: C7.02\n
+        data: P3.00\n
+        data: I-0.60\n
+        data: C337.08\n
+        data: P274166.40\n
+        data: I-0.63\n
+        data: R11.57\n
+        data: S0.95\n
+        data: D0.0014\n
+        data: R348.84\n
+        data: S28.54\n"
+        android:textSize="18sp"/>
+</LinearLayout>

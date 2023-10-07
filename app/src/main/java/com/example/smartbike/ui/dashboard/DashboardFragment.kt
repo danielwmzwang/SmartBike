@@ -952,9 +952,9 @@ class DashboardFragment : Fragment() {
                         val lrSpeedText: TextView = binding.lrSpeedText
                         val lrDistanceText: TextView = binding.lrDistanceText
 
-                        val tempH = BigDecimal(rideDuration/3600).setScale(1, RoundingMode.HALF_EVEN).toDouble()
-                        val tempM = BigDecimal((rideDuration-tempH*3600)/60).setScale(1, RoundingMode.HALF_EVEN).toDouble()
-                        val tempS = BigDecimal((rideDuration-tempH*3600-tempM*60)).setScale(1, RoundingMode.HALF_EVEN).toDouble()
+                        val tempH = (rideDuration/3600).toInt()
+                        val tempM = ((rideDuration-tempH*3600)/60).toInt()
+                        val tempS = (rideDuration-tempH*3600-tempM*60).toInt()
                         val dashDuration = "" + abs(tempH) + "H " + abs(tempM) + "M " + abs(tempS) + "S"
                         val dashDistance = BigDecimal(rideDistance).setScale(1, RoundingMode.HALF_EVEN).toDouble()
                         val dashSpeed = BigDecimal(rideSpeed).setScale(1, RoundingMode.HALF_EVEN).toDouble()
