@@ -1,0 +1,88 @@
+fun arrayAvg(Arr: Array<Double>): Double {
+    var sum = 0.0
+    for (x in 0..4) {
+        sum += Arr[x]
+    }
+    sum = sum / 5.0
+    return sum
+}
+
+fun main() {
+    
+    val letters = listOf('R', 'S', 'D', 'C', 'P', 'I')
+    val random = Random()
+    val array = mutableListOf<String>()
+    
+	repeat(20) {
+        for (letter in letters) {
+            //val letter = letters[random.nextInt(letters.size)]
+            val randomNumber = if (letter == 'D') {
+                String.format("%.4f", random.nextDouble())
+            } else {
+                String.format("%.2f", random.nextDouble())
+            }
+            array.add("$letter$randomNumber")
+        }
+    }
+
+    // Display the randomized array
+    array.forEach { println(it) }
+    
+    val arraysMap = mutableMapOf<Char, MutableList<String>>()
+    var iSpeed = 0
+    var iCad = 0
+    var Speed = Array<Double>(5){0.0}
+    var RPM = Array<Double>(5){0.0}
+    var Cad = Array<Double>(5){0.0}
+    var Inc = Array<Double>(5){0.0}
+    var Power = Array<Double>(5){0.0}
+
+    for (value in array){
+        val dataText = value
+        
+
+        if (dataText.length >= 2) {
+            val identifier = dataText[0] // Get the first character as the identifier
+            val data = dataText.substring(1) // Get the data after the identifier
+
+            // Create or retrieve the list associated with the identifier
+            val dataList = arraysMap.getOrPut(identifier) { mutableListOf() }
+            
+            dataList.add(data) // Add the data to the list
+            if(identifier == 'S') {
+                Speed[iSpeed] = data.toDouble()
+                print("Speed: ")
+                println(arrayAvg(Speed))
+                if (iSpeed == 4) {
+           		 	iSpeed = 0
+        		} else {
+            		iSpeed++
+       			}
+            } else if(identifier == 'R') {
+                RPM[iSpeed] = data.toDouble()
+                print("RPM: ")
+                println(arrayAvg(RPM))
+            } else if(identifier == 'C') {
+                Cad[iCad] = data.toDouble()
+                print("Cad: ")
+                println(arrayAvg(Cad))
+	       } else if(identifier == 'I') {
+                Inc[iCad] = data.toDouble()
+                print("Inc: ")
+                println(arrayAvg(Inc))
+                if (iCad == 4) {
+           		 	iCad = 0
+        		} else {
+            		iCad++
+       			}
+            } else if(identifier == 'P') {
+                Power[iCad] = data.toDouble()
+                print("Power: ")
+                println(arrayAvg(Power))
+           }
+            
+        } else {
+            println("Invalid input. Please enter a valid line with an identifier and data.")
+        }
+        
+    }
