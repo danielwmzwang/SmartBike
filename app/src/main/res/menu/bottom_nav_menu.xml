@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--
     <item
         android:id="@+id/navigation_bluetooth"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="Bluetooth" />
+    -->
 
-    <!--
+
     <item
         android:id="@+id/navigation_workout"
-        android:icon="@drawable/ic_android"
+        android:icon="@drawable/ic_biking"
         android:title="@string/title_workout" />
-
-    -->
 
     <item
         android:id="@+id/navigation_dashboard"

@@ -14,44 +14,92 @@
         android:id="@+id/textViewBluetoothStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bluetooth Status: Connected"
+        android:text="Bluetooth Status: Not Connected"
         android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/textViewBluetoothConnector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connected To: 64:69:4E:8C:95:97"
+        android:text="Connected To: N/A"
+        android:textSize="18sp"/>
+    <!--64:69:4E:8C:95:97-->
+
+    <TextView
+        android:id="@+id/textViewMPUFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MPU: Not Found"
         android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/textViewBluetoothPermission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Permission: Granted"
+        android:text="Permission: Not Granted"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/textViewDataStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data Status: Not Ready"
         android:textSize="18sp"/>
 
     <!-- Real-Time Data Display -->
     <TextView
-        android:id="@+id/textViewRealTimeData"
+        android:id="@+id/textViewRTD_Speed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Real-Time Data:\n
-        data: MPU6050 Found!\n
-        data: R16.54\n
-        data: S1.35\n
-        data: D0.0007\n
-        data: C7.02\n
-        data: P3.00\n
-        data: I-0.60\n
-        data: C337.08\n
-        data: P274166.40\n
-        data: I-0.63\n
-        data: R11.57\n
-        data: S0.95\n
-        data: D0.0014\n
-        data: R348.84\n
-        data: S28.54\n"
+        android:text="Speed:"
         android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/textViewRTD_RPM"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="RPM:"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/textViewRTD_Cadence"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Cadence:"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/textViewRTD_Incline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Incline:"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/textViewRTD_Power"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Power:"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/textViewRTD_Distance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Distance:"
+        android:textSize="18sp"/>
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Start" />
+
 </LinearLayout>

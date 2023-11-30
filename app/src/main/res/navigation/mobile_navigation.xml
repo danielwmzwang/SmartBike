@@ -12,20 +12,20 @@
         tools:layout="@layout/fragment_dashboard" />
 
 
-    <!--
+
     <fragment
         android:id="@+id/navigation_workout"
         android:name="com.example.smartbike.ui.home.HomeFragment"
         android:label="@string/title_workout"
         tools:layout="@layout/fragment_home" />
-    -->
 
+    <!--
     <fragment
         android:id="@+id/navigation_bluetooth"
         android:name="com.example.smartbike.ui.bluetooth.BluetoothFragment"
         android:label="bluetooth"
         tools:layout="@layout/fragment_bluetooth" />
-
+    -->
     <fragment
         android:id="@+id/navigation_settings"
         android:name="com.example.smartbike.ui.settings.SettingsFragment"

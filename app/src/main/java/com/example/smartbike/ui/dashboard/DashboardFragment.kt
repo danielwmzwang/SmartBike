@@ -1,5 +1,6 @@
 package com.example.smartbike.ui.dashboard
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -15,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.smartbike.R
 import com.example.smartbike.databinding.FragmentDashboardBinding
+import com.example.smartbike.services.BluetoothService
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
@@ -22,10 +25,12 @@ import java.io.*
 import java.lang.Math.abs
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDate
 import java.util.*
 
-class DashboardFragment : Fragment() {
+class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
 
     private var _binding: FragmentDashboardBinding? = null
 
@@ -40,6 +45,9 @@ class DashboardFragment : Fragment() {
     private var selected = "ALL"
 
 
+    private lateinit var spinner: Spinner
+
+
     data class datapack(val dates: Vector<String>, val durations: Vector<Int>, val distance: Vector<Double>, val speed: Vector<Double>, val pedal: Vector<Double>,
                         val cad: Vector<Double>, val pwr: Vector<Double>, val pitch: Vector<Double>, val calories: Vector<Double>,
                         val tDuration: Double, val tDistance: Double, val tSpeed: Double)
@@ -49,13 +57,19 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        Log.i("DashboardFragment.kt", "Entered")
+
         val dashboardViewModel =
             ViewModelProvider(this).get(DashboardViewModel::class.java)
+
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         Log.i("Dashboard", "ONCREATEVIEW")
+
+
 
 
         //Last Ride
@@ -212,8 +226,25 @@ class DashboardFragment : Fragment() {
         val dashDuration = "" + (tempdashDuration/3600) + "H " + tempM + "M " + tempS + "S"
         Log.i("pack tDistance", "${pack.tDistance}")
         Log.i("pack distance size", "${pack.distance.size}")
-        val dashDistance = BigDecimal(pack.tDistance/pack.distance.size).setScale(1, RoundingMode.HALF_EVEN).toDouble()
-        val dashSpeed = BigDecimal(pack.tSpeed/pack.speed.size).setScale(1, RoundingMode.HALF_EVEN).toDouble()
+        var dashDistance = 0.0
+        var dashSpeed = 0.0
+        if(pack.distance.size==0)
+        {
+            dashDistance = BigDecimal(pack.tDistance/1).setScale(1, RoundingMode.HALF_EVEN).toDouble()
+        }
+        else
+        {
+            dashDistance = BigDecimal(pack.tDistance/pack.distance.size).setScale(1, RoundingMode.HALF_EVEN).toDouble()
+        }
+        if(pack.speed.size==0)
+        {
+            dashSpeed = BigDecimal(pack.tSpeed/1).setScale(1, RoundingMode.HALF_EVEN).toDouble()
+        }
+        else
+        {
+            dashSpeed = BigDecimal(pack.tSpeed/pack.speed.size).setScale(1, RoundingMode.HALF_EVEN).toDouble()
+        }
+
         txtDBDuration.text = (if(pack.tDuration== Double.NaN) 0 else dashDuration).toString()
         txtDBDistance.text = (if(pack.tDistance== Double.NaN) 0 else dashDistance).toString() + " Miles"
         txtDBSpeed.text = (if(pack.tSpeed== Double.NaN) 0 else dashSpeed).toString() + " MPH"
@@ -839,6 +870,7 @@ class DashboardFragment : Fragment() {
         return root
     }
 
+    @SuppressLint("NewApi")
     private fun readData(binding: FragmentDashboardBinding): datapack
     {
         /*
@@ -886,7 +918,49 @@ class DashboardFragment : Fragment() {
 
         try{
             Log.i("ReadData", "Try")
+            //check exists
+            val f = File(context?.filesDir, "data.csv")
+            if(!f.exists())
+            {
+                Log.i("ReadData", "REJECTED - File does NOT exist")
+                dat.add("")
+                dur.add(0)
+                dis.add(0.0)
+                speed.add(0.0)
+                ped.add(0.0)
+                totalDuration = 0.0
+                totalDistance = 0.0
+                totalSpeed = 0.0
+                return datapack(dat, dur, dis, speed, ped, cad, pwr, pitch, calories, totalDuration, totalDistance, totalSpeed)
+            }
+            else
+            {
+                Log.i("ReadData", "ACCEPTED - File Exists")
+            }
+            //check num files
+            val n = Files.lines(f.toPath()).count()
+            Log.i("DashboardRead","numlines: $n")
+            if(n.toInt()==0)
+            {
+                Log.i("ReadData", "REJECTED - File is EMPTY")
+                dat.add("")
+                dur.add(0)
+                dis.add(0.0)
+                speed.add(0.0)
+                ped.add(0.0)
+                totalDuration = 0.0
+                totalDistance = 0.0
+                totalSpeed = 0.0
+                f.delete()
+                return datapack(dat, dur, dis, speed, ped, cad, pwr, pitch, calories, totalDuration, totalDistance, totalSpeed)
+            }
+            else
+            {
+                Log.i("ReadData", "ACCEPTED - File has $n lines")
+            }
+
             var inp = context?.openFileInput("data.csv")
+
             var count = 0
             if(inp!=null)
             {
@@ -897,7 +971,7 @@ class DashboardFragment : Fragment() {
                 Log.i("ReadData", "Reading3")
                 var line = buffRead.readLine()
                 Log.i("ReadData", "Reading4")
-                Log.i("ReadData", line)
+                Log.i("ReadData", line.toString())
                 while(line!=null)
                 {
 
@@ -1275,4 +1349,10 @@ class DashboardFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    /*
+    override fun onDataReceived(data: String)
+    {
+        Log.i("[Dashboard] onDataReceived", data)
+    }
+    */
 }
