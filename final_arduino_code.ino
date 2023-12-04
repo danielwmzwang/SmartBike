@@ -138,7 +138,7 @@ void loop()
       pedAcc = (crps - tempCad) / (et * 60); //Rad/s/s
       tempCad = crps; //update temp value
       //inertia = (1.00/3.00) * 0.227 * crankArm * crankArm; wrong value, need inertial load. Using 20kgm^2 for average load
-      inertia = 1.50;
+      inertia = 20.00;
       torque = abs(inertia * pedAcc); //torque = I*angularAccel
       forceG = sin(pitch * PI / 180) * 84.3 * 9.81; //force of gravity
       disInc = abs(d1 - d2) * 1609.34; //change in distance converted to meters from miles
