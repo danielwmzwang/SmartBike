@@ -1,5 +1,11 @@
 package com.example.smartbike.ui.dashboard
 
+/*
+Created By: Daniel Wang
+Page Purpose:
+the sole purpose of this page is to display user historical information in a dashboard
+ */
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
@@ -34,8 +40,6 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
 
     private var _binding: FragmentDashboardBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     private var isHistory = false
@@ -48,6 +52,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
     private lateinit var spinner: Spinner
 
 
+    //custom data type to store/retrieve/use data more efficiently and in a cleaner way
     data class datapack(val dates: Vector<String>, val durations: Vector<Int>, val distance: Vector<Double>, val speed: Vector<Double>, val pedal: Vector<Double>,
                         val cad: Vector<Double>, val pwr: Vector<Double>, val pitch: Vector<Double>, val calories: Vector<Double>,
                         val tDuration: Double, val tDistance: Double, val tSpeed: Double)
@@ -58,6 +63,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         savedInstanceState: Bundle?
     ): View {
 
+        //initiate and set up
         Log.i("DashboardFragment.kt", "Entered")
 
         val dashboardViewModel =
@@ -70,9 +76,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         Log.i("Dashboard", "ONCREATEVIEW")
 
 
-
-
-        //Last Ride
+        //Last Ride data
         var lastRideBtn: Button = binding.switch0 //Last Ride Selector
         var lastRideRPM: GraphView = binding.lastRideRPM
         var lastRideSpeed: GraphView = binding.lastRideSpeed
@@ -81,7 +85,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         var lastRidePWR: GraphView = binding.lastRidePWR
         var lastRidePitch: GraphView = binding.lastRidePitch
         var lastRideCals: GraphView = binding.lastRideCals
-        //History
+        //History Setup
         var historyBtn: Button = binding.switch1 //History Selector
         var histDuration: GraphView = binding.histDuration
         var histRPM: GraphView = binding.histRPM
@@ -127,6 +131,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
             tf3.visibility = View.GONE
             tf4.visibility = View.GONE
         }
+        //grab historical details
         binding.switch1.setOnClickListener{
             val f = File(context?.filesDir, "data.csv")
             if(!f.exists())
@@ -167,7 +172,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
             }
 
         }
-
+        //filter selected
         binding.tf1.setOnClickListener{
             selected="1D"
             val color200 = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.purple_200))
@@ -178,6 +183,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
             tf4.backgroundTintList = color200
 
         }
+        //filter selected
         binding.tf2.setOnClickListener{
             selected="1W"
             val color200 = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.purple_200))
@@ -189,6 +195,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
 
             view?.requestLayout()
         }
+        //filter selected
         binding.tf3.setOnClickListener{
             selected="1M"
             val color200 = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.purple_200))
@@ -200,6 +207,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
 
             view?.requestLayout()
         }
+        //filter selected
         binding.tf4.setOnClickListener{
             selected="ALL"
             val color200 = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.purple_200))
@@ -228,6 +236,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         Log.i("pack distance size", "${pack.distance.size}")
         var dashDistance = 0.0
         var dashSpeed = 0.0
+        //safety
         if(pack.distance.size==0)
         {
             dashDistance = BigDecimal(pack.tDistance/1).setScale(1, RoundingMode.HALF_EVEN).toDouble()
@@ -236,6 +245,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         {
             dashDistance = BigDecimal(pack.tDistance/pack.distance.size).setScale(1, RoundingMode.HALF_EVEN).toDouble()
         }
+        //safety
         if(pack.speed.size==0)
         {
             dashSpeed = BigDecimal(pack.tSpeed/1).setScale(1, RoundingMode.HALF_EVEN).toDouble()
@@ -250,13 +260,13 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         txtDBSpeed.text = (if(pack.tSpeed== Double.NaN) 0 else dashSpeed).toString() + " MPH"
 
         //////GRAPH1//////
-
+        //configure graph
         val lineGraphView: GraphView = binding.histDistance
         var distArr = Array<DataPoint>(pack.distance.size){DataPoint(0.0,0.0)}
-        //var listy = List<DataPoint>(pack.distance.size, DataPoint(0.0,0.0))
 
         var maxValY = 0.0
         var maxValX = pack.distance.size.toDouble()
+        //unpack data and apply it to the graph
         for(x in 1..pack.distance.size)
         {
             Log.i("Graph",pack.distance[x-1].toString())
@@ -309,8 +319,10 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
             }
 
         }
+        //apply all unpacked data to a linegraphseries datatype
         val series: LineGraphSeries<DataPoint> = LineGraphSeries(distArr)
 
+        //initialize and create the graph
         lineGraphView.animate()
         lineGraphView.animate()
         lineGraphView.viewport.isScrollable = true
@@ -332,10 +344,10 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         //////GRAPH2//////
         val lineGraphView2: GraphView = binding.histSpeed
         var distArr2 = Array<DataPoint>(pack.speed.size){DataPoint(0.0,0.0)}
-        //var listy = List<DataPoint>(pack.distance.size, DataPoint(0.0,0.0))
 
         var maxValY2 = 0.0
         var maxValX2 = pack.speed.size.toDouble()
+        //unpack data and apply it to the grpah
         for(x in 1..pack.speed.size)
         {
             Log.i("Graph",pack.speed[x-1].toString())
@@ -387,8 +399,10 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
                 }
             }
         }
+        //apply unpacked data to linegraphseries datatype
         val series2: LineGraphSeries<DataPoint> = LineGraphSeries(distArr2)
 
+        //initialize and create the graph
         lineGraphView2.animate()
         lineGraphView2.animate()
         lineGraphView2.viewport.isScrollable = true
@@ -406,12 +420,14 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         lineGraphView2.addSeries(series2)
 
         //////GRAPH3//////
+        //confgiure the graph
         val lineGraphView3: GraphView = binding.histDuration
         var distArr3 = Array<DataPoint>(pack.durations.size){DataPoint(0.0,0.0)}
-        //var listy = List<DataPoint>(pack.distance.size, DataPoint(0.0,0.0))
+
 
         var maxValY3 = 0.0
         var maxValX3 = pack.durations.size.toDouble()
+        //unpack data and apply it to the graph
         for(x in 1..pack.durations.size)
         {
             Log.i("Graph",pack.durations[x-1].toString())
@@ -463,8 +479,9 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
                 }
             }
         }
+        //store into linegraphseries
         val series3: LineGraphSeries<DataPoint> = LineGraphSeries(distArr3)
-
+        //initialize and create graph
         lineGraphView3.animate()
         lineGraphView3.animate()
         lineGraphView3.viewport.isScrollable = true
@@ -480,6 +497,8 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         lineGraphView3.gridLabelRenderer.verticalAxisTitle = "Average Duration (Min)"
         series3.color = R.color.purple_200
         lineGraphView3.addSeries(series3)
+
+        //all subsequent graphs do the same process as above comments
 
         //////GRAPH4//////
         val lineGraphView4: GraphView = binding.histRPM
@@ -873,22 +892,17 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
     @SuppressLint("NewApi")
     private fun readData(binding: FragmentDashboardBinding): datapack
     {
-        /*
-        val f = File(context?.filesDir, "data.csv")
-        if(f.exists())
-        {
-            f.delete()
-        }
-        */
-
+        //read incoming data from data.csv
         val f = File(context?.filesDir, "data.csv")
         var numLines = 0
         if(f.exists())
         {
+            //count number of lines
             f.forEachLine{numLines++}
         }
 
-
+        //initialize values to store local copy of file (so we can close the file
+        //thus improving data security/integrity)
         Log.i("ReadData", "Entered")
         var dat = Vector<String>()
         var dur = Vector<Int>()
@@ -916,12 +930,14 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         var rideDistance = 0.0
         var rideSpeed = 0.0
 
+        //in a try in case of a failure
         try{
             Log.i("ReadData", "Try")
             //check exists
             val f = File(context?.filesDir, "data.csv")
             if(!f.exists())
             {
+                //data doesnt exist, reject the file
                 Log.i("ReadData", "REJECTED - File does NOT exist")
                 dat.add("")
                 dur.add(0)
@@ -958,10 +974,11 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
             {
                 Log.i("ReadData", "ACCEPTED - File has $n lines")
             }
-
+            //grab inputs
             var inp = context?.openFileInput("data.csv")
 
             var count = 0
+            //begin reading and recording data
             if(inp!=null)
             {
                 Log.i("ReadData", "Reading1")
@@ -992,7 +1009,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
                     val s = t1[2].dropLast(1).toInt()
 
                     val timeinSeconds = h*3600+m*60+s
-
+                    //read each one according to the scheme
                     dur.add(timeinSeconds/60)
                     dis.add(BigDecimal(temp[3].toDouble()).setScale(1, RoundingMode.HALF_EVEN).toDouble())
                     speed.add(BigDecimal(temp[4].toDouble()).setScale(1, RoundingMode.HALF_EVEN).toDouble())
@@ -1326,6 +1343,7 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         }
         catch(e: FileNotFoundException)
         {
+            //file is not found, send back default data
             //Log.e("Dashboard", "File not found$e")
             dat.add("")
             dur.add(0)
@@ -1349,10 +1367,4 @@ class DashboardFragment : Fragment()/*, BluetoothService.DataCallback*/ {
         super.onDestroyView()
         _binding = null
     }
-    /*
-    override fun onDataReceived(data: String)
-    {
-        Log.i("[Dashboard] onDataReceived", data)
-    }
-    */
 }

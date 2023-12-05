@@ -1,5 +1,11 @@
 package com.example.smartbike.ui.notifications
 
+/*
+Created By: Daniel Wang
+Page Purpose:
+this page ended up not being used
+ */
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

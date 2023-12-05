@@ -1,5 +1,19 @@
 package com.example.smartbike.ui.bluetooth
 
+/*
+Created By: Daniel Wang
+Page Purpose:
+This page was initially created to configure and test the Bluetooth data transmission/processing
+All functions on here look similar to BluetoothService as this page is, in fact, the older version
+This page was kept, however, as it contained less clutter and was much more reasonable for the
+other subsystems to use to diagnose their own issues. Therefore, this page is kept and, on occasion,
+re-initialized to the front screen for other systems to perform debugging.
+
+Most functions here were eventually migrated to the Service and improved over there.
+Therefore, as this file is kept for technical merit and the improved version is in BluetoothService,
+not much comments will be included here.
+ */
+
 import android.Manifest
 import android.app.Activity
 import android.app.Activity.RESULT_OK
@@ -100,6 +114,7 @@ class BluetoothFragment : Fragment() {
         _binding = FragmentBluetoothBinding.inflate(inflater, container, false)
 
         val binding = _binding!!
+        //displays that showed, on page, the values being given
         btstatusText = binding.textViewBluetoothStatus
         btipText = binding.textViewBluetoothConnector
         btPermText = binding.textViewBluetoothPermission
@@ -115,15 +130,18 @@ class BluetoothFragment : Fragment() {
 
         btn.setOnClickListener{
 
+            //data ready locks and key
             if(connected && mpuFound && permissions)
             {
                 ready = true
             }
+            //start button
             if(!start)
             {
                 Log.i("StartBtn", "If0")
                 Log.i("StartBtn", "start, ready, connected, mpuFound, permissions")
                 Log.i("StartBtn", "$start, $ready, $connected, $mpuFound, $permissions")
+                //reset
                 if(ready)
                 {
                     Log.i("StartBtn", "Ready")
@@ -153,28 +171,31 @@ class BluetoothFragment : Fragment() {
             }
             else
             {
+                //end button
                 Log.i("StartBtn", "If1")
                 start = !start
                 btn.text = "Start"
                 endTime = System.currentTimeMillis()
+                //write to file
                 writeToFile()
 
                 startTime = 0
             }
         }
 
-        //var dataText = binding.textViewRealTimeData
+        //initiate bluetooth related variables/values
 
         val root: View = binding.root
 
         val bluetoothManager: BluetoothManager = requireActivity().getSystemService(BluetoothManager::class.java)
         val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.getAdapter()
 
+        //safety
         if(bluetoothAdapter==null)
         {
             return root
         }
-
+        //safety
         if(bluetoothAdapter?.isEnabled == false) {
             Log.i("isEnabled", "bluetooth is NOT enabled")
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
@@ -196,29 +217,26 @@ class BluetoothFragment : Fragment() {
             Log.i("isEnabled", "bluetooth should be enabled")
         }
 
+        //update status
         btstatusText.text = "Bluetooth Status: Enabled"
 
+        //begin conenction attempts
         var bluetoothGatt: BluetoothGatt? = null
         val deviceAddy = "64:69:4E:8C:95:97"
         Log.i("Connection", "Begin Connection attempt")
 
+        //grab device
         val device = bluetoothAdapter.getRemoteDevice(deviceAddy)
 
         Log.i("Connection", "Got remote device")
         Log.i("Connection", device.toString())
 
+        //check permissions
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.BLUETOOTH_CONNECT
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             Log.i("Bluetooth_Connect Permissions", "NEED PERMISSION")
             ActivityCompat.requestPermissions(
                 requireActivity(),
@@ -233,6 +251,7 @@ class BluetoothFragment : Fragment() {
 
         Log.i("gattCallback", "Entering");
 
+        //prepare for process data
         val arraysMap = mutableMapOf<Char, MutableList<String>>()
         var iSpeed = 0
         var iCad = 0
@@ -245,6 +264,7 @@ class BluetoothFragment : Fragment() {
 
 
         val gattCallback = object: BluetoothGattCallback(){
+            //this section is nearly identical to BLuetoothService
             override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int){
                 Log.i("onConnectionStateChange", "Entered")
                 when(newState){
@@ -255,13 +275,6 @@ class BluetoothFragment : Fragment() {
                                 Manifest.permission.BLUETOOTH_CONNECT
                             ) != PackageManager.PERMISSION_GRANTED
                         ) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
 
                             Log.i("STATE_CONNECTED", "NEED PERMISSION")
 
@@ -495,6 +508,7 @@ class BluetoothFragment : Fragment() {
 
             @RequiresApi(Build.VERSION_CODES.TIRAMISU)
             override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+                //this section is completely identical to BluetoothService
                 Log.i("OnServicesDiscovered", "Entered")
                 if(status == BluetoothGatt.GATT_SUCCESS){
                     //val service = gatt?.getService(serviceUuid)
@@ -552,14 +566,6 @@ class BluetoothFragment : Fragment() {
                             Manifest.permission.BLUETOOTH_CONNECT
                         ) != PackageManager.PERMISSION_GRANTED
                     ) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        //return
                         ActivityCompat.requestPermissions(
                             requireActivity(),
                             arrayOf(Manifest.permission.BLUETOOTH_CONNECT,
@@ -589,13 +595,6 @@ class BluetoothFragment : Fragment() {
                             Manifest.permission.BLUETOOTH_CONNECT
                         ) != PackageManager.PERMISSION_GRANTED
                     ) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
                         Log.i("STATE_CONNECTED", "NEED PERMISSION");
 
                         ActivityCompat.requestPermissions(
@@ -631,22 +630,19 @@ class BluetoothFragment : Fragment() {
             }
         }
 
+        //connection
         bluetoothGatt = device.connectGatt(requireContext(), false, gattCallback)
-
-
-
-
-        Log.i("Main", "Howdy");
-        //Log.i("Main", leScanCallback.toString())
 
         return root
     }
 
+    //toast messages
     private fun toaster(msg: String)
     {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
+    //this function is identical to BluetoothService
     private fun resetChainTimer()
     {
         Log.i("resetChainTimer", "CHAIN RESET")
@@ -657,7 +653,7 @@ class BluetoothFragment : Fragment() {
             (chainTime*mod).toLong()
         )
     }
-
+    //this function is identical to BluetoothService
     private fun resetCrankTimer()
     {
         Log.i("resetCrankTimer", "CRANK RESET")
@@ -669,6 +665,7 @@ class BluetoothFragment : Fragment() {
         )
     }
 
+    //this function is identical to BluetoothService
     @RequiresApi(Build.VERSION_CODES.O)
     private fun writeToFile()
     {
@@ -751,6 +748,7 @@ class BluetoothFragment : Fragment() {
 
     }
 
+    //this function is identical to BluetoothService
     private inner class customTimer(private val id: String): TimerTask(){
         override fun run() {
             if(id=="crank")
@@ -767,15 +765,6 @@ class BluetoothFragment : Fragment() {
                 speedText.text = "Speed: 0.0 MPH"
                 rpmText.text = "RPM: 0.0 RPM"
             }
-        }
-
-        fun fullReset(){
-            cadText.text = "Cadence: 0.0 RPM"
-            incText.text = "Incline: 0.0 Degrees"
-            pwrText.text = "Power: 0.0 Watts"
-            speedText.text = "Speed: 0.0 MPH"
-            rpmText.text = "RPM: 0.0 RPM"
-            distText.text = "Distance: 0.0 Miles"
         }
 
     }

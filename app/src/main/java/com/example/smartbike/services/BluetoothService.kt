@@ -1,5 +1,16 @@
 package com.example.smartbike.services
 
+/*
+Created By: Daniel Wang
+Page Purpose:
+The purpose of this page is to define the Bluetooth Service
+This service handles ALL bluetooth related functions including:
+ - Data Reception (from bluetooth)
+ - Data Processing (mostly Data Processing Subsystem with edits written by me to transmit data properly)
+   > Data Override (in the event the user has stopped pedaling or is braking, etc.)
+ - Data Transmission (post-processing, sending to fragments
+ */
+
 import android.app.Service
 import android.annotation.SuppressLint
 import android.bluetooth.*
@@ -18,17 +29,17 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class BluetoothService : Service() {
+    //bluetooth related items
     private var bluetoothManager: BluetoothManager? = null
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothGatt: BluetoothGatt? = null
     private var bluetoothGattCallback: BluetoothGattCallback? = null
 
-    //
-    //
-
+    //"keys" to ready data transmission
     private var dataReady = false;
     private var transmit = false;
 
+    //global variables to store data
     private val arraysMap = mutableMapOf<Char, MutableList<String>>()
     private var iSpeed = 0
     private var iCad = 0
@@ -39,18 +50,18 @@ class BluetoothService : Service() {
     private var Power = Array<Double>(5) { 0.0 } //Watt
     private var lastDistance = 0.0 //miles
 
+    //our BLE devices unique and specific address
     private val deviceAddy = "64:69:4E:8C:95:97"
 
+    private var mod: Double = 50.0; //modify reset multiplier - CALIBRATION COMPLETE
+    private var crankTime: Long = 0; //stores time for timer to use
+    private var lastCrankTime: Long = 0; //stores the last known crank time reset
+    private var crankTimer: Timer? = null //the actual timer itself
+    private var chainTime: Long = 0; //stores time for timer to use
+    private var lastChainTime: Long = 0; //stores last known chain time reset
+    private var chainTimer: Timer? = null //the actual timer itself
 
-
-    private var mod: Double = 50.0; //modify reset multiplier
-    private var crankTime: Long = 0;
-    private var lastCrankTime: Long = 0;
-    private var crankTimer: Timer? = null
-    private var chainTime: Long = 0;
-    private var lastChainTime: Long = 0;
-    private var chainTimer: Timer? = null
-
+    //these are just initial functions that set things up
     inner class LocalBinder: Binder(){
         fun getService(): BluetoothService{
             return this@BluetoothService
@@ -58,83 +69,105 @@ class BluetoothService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        //Log.i("onBind", "Entered")
         return LocalBinder()
     }
 
+    //the function called to start/initialize the entire service
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        //Log.i("onStartCommand", "Entered")
+        //tell Settings that bluetooth is not yet available
         writeStatus("bluetooth", "Not Available")
+
+        //begin initializing bluetooth
         initializeBluetooth()
         return START_STICKY
     }
 
 
+    //begin initializing bluetooth
     private fun initializeBluetooth(){
-        //Log.i("initializeBluetooth", "Entered")
+        //tell Settings that bluetooth is initializing
         writeStatus("bluetooth", "Initializing")
+
+        //emergency catcher in case the manager is not defined (first time start-up)
         if(bluetoothManager == null)
         {
             bluetoothManager = getSystemService(BluetoothManager::class.java)
         }
+        //get the adapter set up from the manager
         bluetoothAdapter = bluetoothManager!!.getAdapter()
+
+        //begin connection
         connectToDevice()
     }
 
     @SuppressLint("MissingPermission") //all permissions are handled elsewhere
+    //this function handles connecting to a device
     fun connectToDevice(){
+        //tell Settings that bluetooth is attempting to connect
         writeStatus("bluetooth", "Attempting Connection...")
+        //near zero possibility but emergency case where the adapter is somehow undefined
         if(bluetoothAdapter == null)
         {
             Log.e("Device Connection", "An error has occured")
-            return
+            //go back - DO NOT STOP
+            initializeBluetooth()
         }
 
-        //Log.i("connecToDevice", "Attempting Connection Now...")
+        //'device' stores the device instance of our BLE device
         val device = bluetoothAdapter!!.getRemoteDevice(deviceAddy)
-        //Log.i("connecToDevice", "Device Retrieved: $device")
+        //the actual connection is now attempted using said instance using the 'GATT' library
+        //please see 'createBluetoothCallback()' below to continue
         bluetoothGatt = device.connectGatt(this, false, createBluetoothGattCallback())
-        //Log.i("connecToDevice", "Gatt Connected(?)")
     }
 
 
-
+    //all ACTIVE bluetooth actions, etc. are handled here
     @SuppressLint("MissingPermission") //all permissions are handled elsewhere
     private fun createBluetoothGattCallback(): BluetoothGattCallback{
         return object: BluetoothGattCallback(){
+            //onConnectionStateChange: triggered when BluetoothService connects/disconnects
             override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int){
-                //Log.i("[SERVICE]onConnectionStateChange", "Entered")
+                //newState is the "new state" that the bluetooth connection has entered
+                //it will only either be connected or disconnected as shown below
                 when(newState){
                     BluetoothProfile.STATE_CONNECTED ->{
                         Log.i("STATE_CONNECTED", "Connected")
-
-                        //fragments["settings"].onDataReceived()
-
-                        //btstatusText.text = "Bluetooth Status: Connected"
-                        //btipText.text = "Connected To: 64:69:4E:8C:95:97"
-                        //Log.i("STATE_CONNECTED", "PERMISSION GRANTED, DISCOVERING SERVICES")
+                        //tell Settings that bluetooth is connected
                         writeStatus("bluetooth", "Connected")
                         gatt?.discoverServices();
                     }
                     BluetoothProfile.STATE_DISCONNECTED ->{
-                        //btstatusText.text = "Bluetooth Status: Disconnected"
-                        //btipText.text = "Connected To: N/A"
-                        //btPermText.text = "Permission: N/A"
-                        //dataStatTet.text = "Data Status: Not Ready"
                         Log.i("STATE_DISCONNECTED", "Disconnected")
+                        //tell Settings that bluetooth has disconnected but it is now retrying
                         writeStatus("bluetooth", "Disconnected, Retrying...")
+                        //we call the external function from above to start the entire process over
+                        //we will also enter this function if connection fails in the first place
+                        //therefore, as long as the bluetooth is not connected, we will continue
+                        //to keep retrying until we succeed
                         connectToDevice()
                     }
                 }
+                //initiate the RECEPTION in BluetoothService - this is for the Service to know
+                //when to STOP TRANSMITTING DATA due to the user stopping a workout
+                //see receiver below to see how it ishandled
+                //filter tells the program what to look for
                 val filter = IntentFilter("StartTransmission")
+                //register the receiver (initiate it)
                 registerReceiver(receiver, filter)
             }
 
+            //all incoming transmissions are handled here
             private val receiver = object : BroadcastReceiver(){
+                //we only care about receiving thus there is only the reception function
                 override fun onReceive(context: Context?, intent: Intent?){
+                    //the specific data 'Header' we're looking for is called "data"
                     val data = intent?.getStringExtra("data")
+                    //safety
                     if(data!=null)
                     {
+                        //set the flag for transmit
+                        //true = transmission is OK
+                        //false = do NOT TRANSMIT
                         transmit = data=="STARTING"
                     }
                     else
@@ -145,80 +178,110 @@ class BluetoothService : Service() {
                 }
             }
 
+            //this is to read the first "characteristic
+            //'characteristics' oversimplified simply are data transmissions/updates
+            //the data sent here is ALWAYS DUMPED - this is due to the BLE Device *always* transmitting
+            //irrelevant device information at the beginning. therefore, storing this information is useless
+            //the data is still output to console though for debugging purposes
             override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
                 Log.i("onCharacteristicRead", "Entered")
+                //safety
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    // Characteristic read successfully.
+                    //data read successfully
                     val data = characteristic.value
-                    // Handle the data here.
+                    //handle data
                     Log.i("onCharacteristicRead",data.toString())
                 }
             }
 
-
+            //after the first characteristic is read, all subsequent data transmissions are sent here
             override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?){
-
+                //safety
                 if (gatt != null) {
-                    //val data = gatt.readCharacteristic(characteristic)
+                    //read value (comes in as a Byte Array
                     val data = characteristic!!.value;
+                    //convert to readable/usable Strings
                     val dataString = String(data, Charsets.UTF_8)
                     Log.i("onCharacteristicChanged", dataString);
+                    //safety
                     if(dataString!=null && dataString!="")
                     {
-                        //collect and hold times
+                        /*
+                        the Chain and Crank timers are two separate independent entities that operate in parallel
+                        furthermore, they may be triggered together or separately
+                        therefore, there are two identical components but for handling each one
+                         */
+
+                        //collect and hold times for CHAIN TIMER
                         if(dataString.first()=='S' || dataString.first()=='R')
                         {
+                            //if data is received in chain timer, the data is ready for collection
                             dataReady = true
+                            //for subsequent runs
                             if(chainTimer!=null)
                             {
+                                //calculates time between now and the last time the switch was hit
                                 chainTime = System.currentTimeMillis() - lastChainTime
                             }
-                            else
+                            else //for first run -> 2 seconds
                             {
                                 chainTime = 2000L
                             }
+                            //record the new "last hit"
                             lastChainTime = System.currentTimeMillis()
                             Log.i("chainTime", "$chainTime")
                             Log.i("sysTime", "${System.currentTimeMillis()}")
+                            //reset the timer as we've received data
                             resetChainTimer()
 
                         }
+                        //collect and hold times for CRANK TIMER
                         else if(dataString.first()=='C' || dataString.first()=='P' || dataString.first()=='I')
                         {
+                            //if data is received in crank timer, the data is ready for collection
                             dataReady = true
+                            //for subsequent runs
                             if(crankTimer!=null)
                             {
+                                //calculates time between now and the last time the switch was hit
                                 crankTime = System.currentTimeMillis() - lastCrankTime
                             }
-                            else
+                            else //for first run -> 2 seconds
                             {
                                 crankTime = 2000L
                             }
+                            //record the new "last hit"
                             lastCrankTime = System.currentTimeMillis()
                             Log.i("crankTime", "$crankTime")
                             Log.i("sysTime", "${System.currentTimeMillis()}")
+                            //reset the timer as we've received data
                             resetCrankTimer()
 
                         }
                         //process the data
+                        //a try catch is used to prevent the program from ever crashing due to bad data
                         try{
                             processData(dataString)
-                        }catch(e: NumberFormatException)
+                        }
+                        catch(e: NumberFormatException) //need to track what bad data comes in
                         {
-                            e.printStackTrace()
+                            e.printStackTrace() //this just prints to console what the crash script *would* be
                             Log.i("processData", "Number Format Exception for: $dataString")
                         }
 
                     }
                     else
                     {
-                        //Log.i("onCharacteristicChanged", "ELSE")
+                        //just to notify if the safety every went off
+                        Log.i("onCharacteristicChanged", "ELSE")
                     }
                 }
 
 
             }
 
+            //[DATA PROCESSING SUBSYSTEM]
+            //calculates the average of an array
             fun arrayAvg(Arr: Array<Double>): Double {
                 var sum = 0.0
                 for (x in 0..4) {
@@ -228,27 +291,45 @@ class BluetoothService : Service() {
                 return sum
             }
 
+            //[MOSTLY DATA PROCESSING SUBSYSTEM]
             fun processData(input: String) {
                 Log.i("ProcessingData", "Entered with {$input}")
                 if (input.length != 0) {
+
+                    //first "net" to try to catch an MPU reset
+                    /*
+                    this code has a high probability of failure but is still included as it would
+                    (at least in computer terms) significantly expedite efficiency
+                    in human terms, this code only makes <1 second of a difference to our eyes
+                    the reasoning for the error is due to the MPU device transmitting random
+                    symbols and signals whenever it resets. Therefore, significantly lowering
+                    the probability of success here
+                     */
                     if(input.contains("��"))
                     {
                         Log.i("processData", "MPU Lost")
                         dataReady = false;
+                        //an MPU reset has occurred but MPU is STILL LOST
+                        //tell settings data transmission is Not Ready
                         writeStatus("data", "Not Ready")
-                        //TODO
-                        /*
-                        mpuText.text = "MPU: LOST";
-
-                         */
                     }
+                    //second "net" to catch an MPU reset
+                    /*
+                    this code has a 100% probability of success
+                    furthermore, this code demonstrates a successful reboot and data ready for transmission
+                     */
                     if(input.contains("MPU6050 Found!"))
                     {
                         Log.i("processData", "MPU Found")
                         dataReady = true;
+                        //tell status data transmission is ready
                         writeStatus("data", "Ready")
                     }
 
+                    //IMPORTANT: all comments and code within JUST THIS IF STATEMENT
+                    //that are marked with [APP] and [ENDAPP] are by me, Daniel Wang
+                    //All other comments and code is by the Data Processing Subsystem
+                    //[APP] keys necessary to begin transmission - both MUST be TRUE
                     if(transmit && dataReady)
                     {
                         //do stuff
@@ -256,11 +337,8 @@ class BluetoothService : Service() {
                         //val random = Random()
                         val array = mutableListOf<String>()
 
-
                         // Display the randomized array
                         array.forEach { println(it) }
-
-
 
                         val dataText = input
                         val identifier = dataText[0] // Get the first character as the identifier
@@ -274,35 +352,46 @@ class BluetoothService : Service() {
                             Speed[iSpeed] = data.toDouble()
                             print("Speed: ")
                             println(arrayAvg(Speed))
+                            //[APP]: send post-processed data to the Workout Page down to 1 decimal place
                             writeData(String.format("%.1f",arrayAvg(Speed)), "s")
+                            //[ENDAPP]
                         } else if (identifier == 'R') {
                             RPM[iSpeed] = data.toDouble()
                             Log.i("RPM","ENTERED RPM")
                             print("RPM: ")
                             println(arrayAvg(RPM))
+                            //[APP]: send post-processed data to the Workout Page down to 1 decimal place
                             writeData(String.format("%.1f",arrayAvg(RPM)), "r")
+                            //[ENDAPP]
                         } else if (identifier == 'C') {
                             Cad[iCad] = data.toDouble()
                             print("Cad: ")
                             println(arrayAvg(Cad))
-                            //to screen
+                            //[APP]: send post-processed data to the Workout Page down to 1 decimal place
                             writeData(String.format("%.1f",arrayAvg(Cad)), "c")
+                            //[ENDAPP]
                         } else if (identifier == 'I') {
                             Inc[iCad] = data.toDouble()
                             print("Inc: ")
                             println(arrayAvg(Inc))
+                            //[APP]: send post-processed data to the Workout Page down to 1 decimal place
                             writeData(String.format("%.1f",arrayAvg(Inc)), "i")
+                            //[ENDAPP]
                         } else if (identifier == 'P') {
                             Power[iCad] = data.toDouble()
                             print("Power: ")
                             println(arrayAvg(Power))
+                            //[APP]: send post-processed data to the Workout Page down to 1 decimal place
                             writeData(String.format("%.1f",arrayAvg(Power)), "p")
+                            //[ENDAPP]
                         }
                         else if (identifier == 'D'){
                             lastDistance = data.toDouble()
                             print("Last Distance: ")
                             println(lastDistance)
+                            //[APP]: send post-processed data to the Workout Page down to 1 decimal place
                             writeData(String.format("%.1f",lastDistance), "d")
+                            //[ENDAPP]
                         }
                     }
                 }
@@ -312,12 +401,20 @@ class BluetoothService : Service() {
 
             @SuppressLint("MissingPermission") //all permissions are handled elsewhere
             @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+            /*
+            this function essentially takes the connected BLE device and starts looking through all of the details
+            BLE standard UUID's (Universal Unique Identifier) are, as the name suggests, unique to all devices
+            this function searches for the specific ID's needed to READ incoming data
+             */
             override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
                 Log.i("OnServicesDiscovered", "Entered")
+                //safety
                 if(status == BluetoothGatt.GATT_SUCCESS){
                     //val service = gatt?.getService(serviceUuid)
                     val serviceList = gatt?.services
+                    //safety
                     if (serviceList != null) {
+                        //grab the service uuid object
                         for(service in serviceList) {
                             val uuid = service.uuid;
                             Log.i("ServiceList", service.toString());
@@ -325,18 +422,16 @@ class BluetoothService : Service() {
                         }
                     }
 
-                    /*
-                    val serviceUUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
-                    val characterUUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
-                    val char = gatt?.getService(serviceUUID)?.getCharacteristic(characterUUID);
-                    */
 
+                    //specific group of ID's necessary to READ data
                     val serviceUUIDSTR = "0000ffe0-0000-1000-8000-00805f9b34fb";
                     val characterUUIDSTR = "0000ffe1-0000-1000-8000-00805f9b34fb";
                     val descriptorUUIDSTR = "00002901-0000-1000-8000-00805f9b34fb";
 
+                    //grab the service object
                     val service = gatt?.getService(serviceList?.get(2)?.uuid)
 
+                    //safety
                     if(service?.uuid.toString()!=serviceUUIDSTR)
                     {
                         Log.w("SERVICEUUID MISMATCH", service?.uuid.toString());
@@ -344,10 +439,10 @@ class BluetoothService : Service() {
                         return;
                     }
 
+                    //grab the character object
                     val character = service?.characteristics?.get(0);
 
-
-
+                    //safety
                     if(character?.uuid.toString()!=characterUUIDSTR)
                     {
                         Log.w("characterUUID MISMATCH", character?.uuid.toString());
@@ -355,9 +450,10 @@ class BluetoothService : Service() {
                         return;
                     }
 
-
-
+                    //grab the descriptor object
                     val descriptor = character?.descriptors?.get(1);
+
+                    //safety
                     if(descriptor?.uuid.toString()!=descriptorUUIDSTR)
                     {
                         Log.w("descriptorUUID MISMATCH", descriptor?.uuid.toString());
@@ -365,11 +461,10 @@ class BluetoothService : Service() {
                         return;
                     }
 
+                    //enable notifications (aka: constant flow of data coming in
                     gatt?.setCharacteristicNotification(character, true);
 
-
-                    //successful
-
+                    //successful, print out data just to be safe and visually check
                     Log.i("[BLE Info] serviceUUID", service.toString());
                     Log.i("[BLE Info] characterUUID", character.toString());
                     Log.i("[BLE Info] descriptorUUID", descriptor.toString());
@@ -378,13 +473,16 @@ class BluetoothService : Service() {
                     Log.i("[BLE Info] characterUUID", character?.uuid.toString());
                     Log.i("[BLE Info] descriptorUUID", descriptor?.uuid.toString());
 
-                    Log.i("PostPermission", "Permission Granted?");
+                    //safety
                     if (gatt != null) {
+                        //safety
                         if (descriptor != null) {
-                            //gatt.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                             Log.i("OnServicesDiscoveredEnd", "Writing to descriptor")
+                            //enable notifications for specific descriptor
                             descriptor?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            //update the gatt telling it the new descriptor (with enabled notifications)
                             gatt?.writeDescriptor(descriptor)
+                            //more debug info
                             Log.i("OnServicesDiscoveredEnd", "Wrote to descriptor")
                             Log.i("OnServicesDiscoveredEnd",descriptor.toString())
                             Log.i("OnServicesDiscoveredEnd",gatt.toString())
@@ -401,28 +499,35 @@ class BluetoothService : Service() {
         }
     }
 
+    //this function just resets the countdown with whatever new value was provided
     private fun resetChainTimer()
     {
-        //Log.i("resetChainTimer", "CHAIN RESET")
+        //stop the old timer (if there is one)
         chainTimer?.cancel()
+        //reinitialize the timer
         chainTimer = Timer()
+        //give it the new time and an ID (see customTimer for more info
         chainTimer?.schedule(
             customTimer("chain"),
-            (chainTime*mod).toLong()
+            (chainTime*mod).toLong() //function only accepts Long's
         )
     }
 
+    //this function just resets the countdown with whatever new value was provided
     private fun resetCrankTimer()
     {
-        //Log.i("resetCrankTimer", "CRANK RESET")
+        //stop the old timer (if there is one)
         crankTimer?.cancel()
+        //reinitialize the timer
         crankTimer = Timer()
+        //give it the new time and an ID (see customTimer for more info
         crankTimer?.schedule(
             customTimer("crank"),
-            (crankTime*mod).toLong()
+            (crankTime*mod).toLong() //function only accepts Long's
         )
     }
 
+    //in the event the service is destroyed, disconnect the device
     @SuppressLint("MissingPermission") //all permissions are handled elsewhere
     override fun onDestroy(){
         super.onDestroy()
@@ -430,6 +535,7 @@ class BluetoothService : Service() {
         disconnectDevice()
     }
 
+    //function to disconnect the device safely
     @SuppressLint("MissingPermission") //all permissions are handled elsewhere
     fun disconnectDevice(){
         Log.i("disconnectDevice", "Entered")
@@ -441,100 +547,51 @@ class BluetoothService : Service() {
         }
     }
 
+    //BROADCASTING
+    //this is where the Service broadcasts (sender) to other fragments (receiver)
     fun writeData(data: String, dataType: String)
     {
-        //Log.i("writeData", "data: $data, dataType: $dataType")
+        //define a 'filter' for the fragments to look for
         val intent = Intent("DataTransmission")
+        //LOAD the data, the 'name' defined as "data" here tells the receiver what to look for
         intent.putExtra("data", "$dataType:$data")
+        //SEND the data
         sendBroadcast(intent)
-        //Log.i("writeData", "Complete")
-        /*
-        try{
-            fragments["home"]?.onDataReceived(data, dataType)
-        }
-        catch (e: NullPointerException)
-        {
-
-        }
-
-         */
     }
 
+    //BROADCASTING
+    //this is where the Service broadcasts (sender) to other fragments (receiver)
     fun writeStatus(status: String, value: String)
     {
-        Log.i("writeStatus", "status: $status, value: $value")
+        //define a 'filter' for the fragments to look for
         val intent = Intent("StatusTransmission")
+        //LOAD the data, the 'name' defined as "status" here tells the receiver what to look for
         intent.putExtra("status", "$status:$value")
+        //SEND the data
         sendBroadcast(intent)
-        Log.i("writeStatus", "Complete")
     }
 
-
+/*
+This is a custom timer class i created for the sake of the Crank and Chain timers
+all it does is define what to do when the time runs out
+ */
     private inner class customTimer(private val id: String): TimerTask(){
         override fun run() {
+            //id's define which one has run out of time
             if(id=="crank")
             {
                 Log.i("customTimer","Crank Triggered")
-                //TODO
+                //reset the cadence and power to 0 as no work is being done
                 writeData("0.0", "c")
-                //writeData("0.0", "i")
                 writeData("0.0", "p")
-
-                /*
-                cadText.text = "Cadence: 0.0 RPM"
-                incText.text = "Incline: 0.0 Degrees"
-                pwrText.text = "Power: 0.0 Watts"
-                */
             }
             if(id=="chain")
             {
                 Log.i("customTimer","Chain Triggered")
-                //TODO
+                //reset the speed and rpm to 0 as no work is being done
                 writeData("0.0", "s")
                 writeData("0.0", "r")
-            /*
-                speedText.text = "Speed: 0.0 MPH"
-                rpmText.text = "RPM: 0.0 RPM"
-
-                 */
             }
         }
-
-        fun fullReset(){
-
-            //TODO
-            Log.i("BLEService", "Full Reset")
-
-            /*
-            cadText.text = "Cadence: 0.0 RPM"
-            incText.text = "Incline: 0.0 Degrees"
-            pwrText.text = "Power: 0.0 Watts"
-            speedText.text = "Speed: 0.0 MPH"
-            rpmText.text = "RPM: 0.0 RPM"
-            distText.text = "Distance: 0.0 Miles"
-             */
-        }
-
     }
-
-    /*
-    interface DataCallback{
-        fun onDataReceived(data: String){
-
-        }
-
-        abstract fun setCallback(bluetoothService: BluetoothService) //TODO
-    }
-    */
-
 }
-
-/*
-Data Delivery Structure:
-
-string:
-[data:code] IncomingData
-where code:
- -
-[
- */

@@ -1,5 +1,18 @@
 package com.example.smartbike.services
 
+/*
+Created By: Daniel Wang
+Page Purpose:
+This page is a COPY of Bluetooth Service. This page allows for emulation testing to be done without use of the phone or bike
+This service handles ALL bluetooth SERVER functions
+
+In other words, this module is for development purposes ONLY. This is not used in the final product but is kept for technical merit
+
+Essentially, this page "pretends" to be the BLE Device on the bike and transmits random information out
+Furthermore, it copies the appropriate UUID's from the bikes BLE Device to truly and completely copy it
+As most functions are nearly identical and it is not a final product item, there will be significantly less comments here
+ */
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -27,6 +40,7 @@ class BLEServerService : Service() {
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var bluetoothGattServer: BluetoothGattServer
 
+    //bike data
     private val SERVICE_UUID: UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
     private val CHARACTERISTIC_UUID: UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
 
@@ -42,12 +56,9 @@ class BLEServerService : Service() {
 
     private var connectedDevice: BluetoothDevice? = null
 
-    /*
-    fun setActivityContext(activityContext: Context){
-        this.activityContext = activityContext
-    }
-    */
 
+    //all components here are identical to BluetoothService but are flipped to being the SERVER version
+    //i.e., instead of reading, this is mostly sending data
     private val serverCallback = object : BluetoothGattServerCallback() {
         override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
             super.onConnectionStateChange(device, status, newState)
@@ -75,13 +86,6 @@ class BLEServerService : Service() {
                         Manifest.permission.BLUETOOTH_CONNECT
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
                     ActivityCompat.requestPermissions(
                         this@BLEServerService as Activity,
                         arrayOf(Manifest.permission.BLUETOOTH_CONNECT,
@@ -128,13 +132,6 @@ class BLEServerService : Service() {
                         Manifest.permission.BLUETOOTH_CONNECT
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
                     ActivityCompat.requestPermissions(
                         this@BLEServerService as Activity,
                         arrayOf(Manifest.permission.BLUETOOTH_CONNECT,
@@ -175,7 +172,6 @@ class BLEServerService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
         return binder
     }
 
@@ -198,27 +194,7 @@ class BLEServerService : Service() {
             Log.i("initBluetooth", "Bluetooth is enabled.")
         }
         Log.i("initBluetooth","Pre-perm")
-        /*
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_ADVERTISE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //return
-            ActivityCompat.requestPermissions(
-                this as Activity,
-                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                1234
-            )
-        }
-        */
+
         Log.i("initBluetooth","Post-perm")
         bluetoothGattServer = bluetoothManager.openGattServer(this, serverCallback)
         bluetoothGattServer.addService(createGattService())
@@ -257,27 +233,6 @@ class BLEServerService : Service() {
             .build()
 
 
-        /*
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_ADVERTISE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //return
-            ActivityCompat.requestPermissions(
-                this as Activity,
-                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                1234
-            )
-        }
-         */
         bluetoothAdapter.bluetoothLeAdvertiser.startAdvertising(
             advertiseSettings,
             advertiseData,
@@ -289,14 +244,10 @@ class BLEServerService : Service() {
         Log.i("onStartCommand", "entered")
         when(intent?.action)
         {
-            //Log.i("onStartCommand","When")
             ACTION_SEND_DATA ->{
                 transmitData("Howdy!");
                 while(true)
                 {
-                    //val random = Random(System.currentTimeMillis())
-                    //val secs = (1000..2000).random()//.nextInt(IntRange(1000, 2000))
-                    //Thread.sleep(secs.toLong())
                     transmitData("MEOW")
                 }
             }
@@ -309,28 +260,6 @@ class BLEServerService : Service() {
     {
         connectedDevice?.let{
             characteristic.value = msg.toByteArray()
-            /*
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                //return
-                ActivityCompat.requestPermissions(
-                    this as Activity,
-                    arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                    1234
-                )
-            }
-
-             */
             bluetoothGattServer.notifyCharacteristicChanged(
                 it, characteristic, false
             )
@@ -342,55 +271,11 @@ class BLEServerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         stopAdvertising()
-        /*
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //return
-            ActivityCompat.requestPermissions(
-                this as Activity,
-                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                1234
-            )
-        }
-
-         */
         bluetoothGattServer.close()
     }
 
     @SuppressLint("MissingPermission")
     private fun stopAdvertising() {
-        /*
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_ADVERTISE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //return
-            ActivityCompat.requestPermissions(
-                this as Activity,
-                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                1234
-            )
-        }
-
-         */
         bluetoothAdapter.bluetoothLeAdvertiser.stopAdvertising(advertiseCallback)
     }
 
