@@ -1,0 +1,18 @@
+Added Component: Designator=KR 1K(RESC2013X55X40ML15T20)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Vishay Dale"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number"; Value = "TNPW080520K0BEEN"; VariantName = "[No Variations]"
+Add Pin To Net: Unknown Pin: Pin Co-1
+Add Pin To Net: Unknown Pin: Pin Co-2
+Added Pin To Net: NetName=GND Pin=KR 1K-1
+Added Pin To Net: NetName=NetBuck Down_5 Pin=KR 1K-2
+Add Pin To Net: Unknown Pin: Pin Lmin-1
+Add Pin To Net: Unknown Pin: Pin Lmin-2
+Add Pin To Net: Unknown Pin: Pin R2-1
+Add Pin To Net: Unknown Pin: Pin R2-2
+Add Pin To Net: Unknown Pin: Pin Rsc-1
+Add Pin To Net: Unknown Pin: Pin Rsc-2
+Add Class Member: Failed to add class member : Component Co Capacitor
+Added Member To Class: ClassName=Buck Down Member=Component KR 1K TNPW080520K0BEEN
+Add Class Member: Failed to add class member : Component Lmin Inductor
+Add Class Member: Failed to add class member : Component R2 Resistor
+Add Class Member: Failed to add class member : Component Rsc Resistor

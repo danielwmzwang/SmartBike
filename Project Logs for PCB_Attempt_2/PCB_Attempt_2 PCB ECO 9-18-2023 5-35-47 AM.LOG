@@ -1,0 +1,24 @@
+Added Pin To Net: NetName=GND Pin=Battery 4-1
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=BD IN-2
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=Boost-5
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=Buck Down-5
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=C 100 nF BST -1
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=C1 100 nF BD-1
+Added Pin To Net: NetName=GND Pin=C2 100 uF-1
+Added Pin To Net: NetName=GND Pin=C3 100 uF-1
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=C3 100 uF-2
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=CB 1000 uF-2
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=Full Bridge Rectifier-3
+Added Pin To Net: NetName=GND Pin=LED 4-2
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=LM 1-2
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=LM 2-3
+Added Pin To Net: NetName=GND Pin=pot 4-2
+Added Pin To Net: NetName=GND Pin=pot 4-3
+Added Pin To Net: NetName=GND Pin=R16 2.4 k-1
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=R 17 240 ohm-2
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=RB 2 ohm-1
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=Rsc 0.2 Bst-2
+Added Pin To Net: NetName=NetBalancer OUT_1 Pin=Rsc .2 ohm BD-2
+Added Pin To Net: NetName=GND Pin=U4-2
+Added Pin To Net: NetName=GND Pin=VD16-1
+Change Net Name : Old Net Name=NetBalancer OUT_1 New Net Name=VCC

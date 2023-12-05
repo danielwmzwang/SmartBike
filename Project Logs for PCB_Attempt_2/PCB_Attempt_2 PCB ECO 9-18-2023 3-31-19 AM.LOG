@@ -1,0 +1,3 @@
+Change Component Designator: OldDesignator=330 uF Ct NewDesignator=330 uF Ct BST
+Change Component Designator: OldDesignator=C bst NewDesignator=C 100 nF BST 
+Change Net Name : Old Net Name=Net330 uF Ct_2 New Net Name=Net330 uF Ct BST_2

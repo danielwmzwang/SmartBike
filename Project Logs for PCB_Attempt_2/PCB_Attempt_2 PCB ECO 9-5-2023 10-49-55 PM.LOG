@@ -1,0 +1,14 @@
+Change Component Designator: OldDesignator=C1 100 nF NewDesignator=C1 100 nF BD
+Change Component Designator: OldDesignator=Co 27 uF NewDesignator=Co 27 uF BD
+Change Component Designator: OldDesignator=CT 200 pF NewDesignator=CT 200 pF BD
+Change Component Designator: OldDesignator=DBD? NewDesignator=DBD Boost
+Change Component Designator: OldDesignator=KR 3k ohm NewDesignator=KR 3k ohm BD
+Change Component Designator: OldDesignator=Lmin 1 33 uH NewDesignator=Lmin 33 uH BD
+Change Component Designator: OldDesignator=Rsc .2 ohm NewDesignator=Rsc .2 ohm BD
+Add Pin To Net: Unknown Pin: Pin Bst R1-1
+Add Pin To Net: Unknown Pin: Pin Bst R1-2
+Add Pin To Net: Unknown Pin: Pin Co bst-1
+Add Pin To Net: Unknown Pin: Pin Co bst-2
+Change Net Name : Old Net Name=NetCo 27 uF_2 New Net Name=NetCo 27 uF BD_2
+Add Class Member: Failed to add class member : Component Bst R1 Resistor
+Add Class Member: Failed to add class member : Component Co bst Capacitor

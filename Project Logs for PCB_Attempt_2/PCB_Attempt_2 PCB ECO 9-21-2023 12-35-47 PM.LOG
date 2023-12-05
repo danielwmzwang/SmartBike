@@ -1,0 +1,31 @@
+Removed Pin From Net: NetName=GND Pin=CB 1000 uF-1
+Removed Pin From Net: NetName=GND Pin=Full Bridge Rectifier-4
+Removed Pin From Net: NetName=GND Pin=RB 2 ohm-2
+Change Component Designator: OldDesignator=180 ohm R  Bst NewDesignator=180 R  Bst
+Change Component Designator: OldDesignator=330 uF Ct BST NewDesignator=Ct BST
+Change Component Designator: OldDesignator=ARDUINO BARREL NewDesignator=ARDUINO
+Change Component Designator: OldDesignator=C 100 nF BST  NewDesignator=C 1 BST
+Change Component Designator: OldDesignator=C1 100 nF BD NewDesignator=C1 BD
+Change Component Designator: OldDesignator=CB 1000 uF NewDesignator=C RB
+Change Component Designator: OldDesignator=CT 200 pF BD NewDesignator=CT BD
+Change Component Designator: OldDesignator=Full Bridge Rectifier NewDesignator=Rectifier
+Change Component Designator: OldDesignator=KR 3k ohm BD NewDesignator=3k BD
+Change Component Designator: OldDesignator=Lmin 33 uH BD NewDesignator=Lmin BD
+Change Component Designator: OldDesignator=Lmin 33 uH Bst NewDesignator=Lmin Bst
+Change Component Designator: OldDesignator=R2 1k NewDesignator=R2
+Change Component Designator: OldDesignator=R1 20k NewDesignator=R1
+Change Component Designator: OldDesignator=RB 2 ohm NewDesignator=R RB
+Change Component Designator: OldDesignator=Rsc 0.2 Bst NewDesignator=Rsc BST
+Change Component Designator: OldDesignator=Rsc .2 ohm BD NewDesignator=Rsc BD
+Added Pin To Net: NetName=GND Pin=Boost-3
+Added Pin To Net: NetName=GND Pin=Ct BST-2
+Change Net Name : Old Net Name=Net180 ohm R  Bst_1 New Net Name=Net180 R  Bst_1
+Change Net Name : Old Net Name=Net180 ohm R  Bst_2 New Net Name=Net180 R  Bst_2
+Change Net Name : Old Net Name=NetARDUINO BARREL_1 New Net Name=Net3k BD_1
+Change Net Name : Old Net Name=NetR2 1k_1 New Net Name=NetR2_1
+Change Net Name : Old Net Name=NetR1 20k_2 New Net Name=NetR1_2
+Added Pin To Net: NetName=NetC RB_1 Pin=C RB-1
+Added Pin To Net: NetName=NetC RB_1 Pin=R RB-2
+Added Pin To Net: NetName=NetC RB_1 Pin=Rectifier-4
+Added Net: Name=NetC RB_1
+Added Member To Class: ClassName=Boost AC Member=Component C 1 BST C410C104M5U5TA7200

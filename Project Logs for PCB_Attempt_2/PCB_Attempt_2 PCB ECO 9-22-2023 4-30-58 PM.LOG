@@ -1,0 +1,4 @@
+Change Component Designator: OldDesignator=Boost Connector NewDesignator=BST OUT
+Added Pin To Net: NetName=GND Pin=C RB-1
+Added Pin To Net: NetName=GND Pin=Rectifier-4
+Added Pin To Net: NetName=GND Pin=R RB-2

@@ -1,0 +1,9 @@
+Change Component Designator: OldDesignator=180 R  Bst NewDesignator=180 Bst
+Change Component Designator: OldDesignator=C 1 BST NewDesignator=C1 BST
+Change Component Designator: OldDesignator=Dynamo Barrel NewDesignator=D BARREL
+Change Component Designator: OldDesignator=R 1k BST NewDesignator=R1 BST
+Change Component Designator: OldDesignator=R2 Bst 13k NewDesignator=R2 Bst 
+Change Net Name : Old Net Name=Net180 R  Bst_1 New Net Name=Net180 Bst_1
+Change Net Name : Old Net Name=Net180 R  Bst_2 New Net Name=Net180 Bst_2
+Change Net Name : Old Net Name=NetDynamo Barrel_1 New Net Name=NetD BARREL_1
+Change Net Name : Old Net Name=NetDynamo Barrel_2 New Net Name=NetD BARREL_2

@@ -1,0 +1,7 @@
+Removed Pin From Net: NetName=GND Pin=Boost-3
+Removed Pin From Net: NetName=GND Pin=Ct BST-2
+Removed Member From Class: ClassName=Buck Down Member=R1
+Removed Member From Class: ClassName=Buck Down Member=R2
+Added Pin To Net: NetName=NetBoost_3 Pin=Boost-3
+Added Pin To Net: NetName=NetBoost_3 Pin=Ct BST-2
+Added Net: Name=NetBoost_3

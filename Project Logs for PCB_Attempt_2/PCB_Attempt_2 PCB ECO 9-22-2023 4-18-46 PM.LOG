@@ -1,0 +1,10 @@
+Change Component Designator: OldDesignator=Balancer IN NewDesignator=PRO IN
+Change Component Designator: OldDesignator=Balancer OUT NewDesignator=PRO OUT
+Change Component Designator: OldDesignator=Battery 1 NewDesignator=B1
+Change Component Designator: OldDesignator=Battery 2 NewDesignator=B2
+Change Component Designator: OldDesignator=Battery 3 NewDesignator=B3
+Change Component Designator: OldDesignator=Battery 4 NewDesignator=B4
+Change Net Name : Old Net Name=NetBalancer IN_2 New Net Name=NetC2_2
+Change Net Name : Old Net Name=NetBattery 1_1 New Net Name=NetB1_1
+Change Net Name : Old Net Name=NetBattery 2_1 New Net Name=NetB2_1
+Change Net Name : Old Net Name=NetBattery 3_1 New Net Name=NetB3_1
